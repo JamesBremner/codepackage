@@ -36,7 +36,7 @@ Resolving deltas: 100% (56/56), done.
 cutest published to C:\Users\James\code\ravencode/pub/src
 ```
 
-To build your application with the cutest application
+To build your application with the cutest code
 
 ```
 g++ -o app.exe -c app.cpp -c ../ravencode/pub/src/cutest.cpp -I../ravencode/pub/src/

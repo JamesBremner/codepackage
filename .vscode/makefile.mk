@@ -12,7 +12,7 @@ ODIR = ./.vscode/obj
 
 # symbols
 
-OPT = -O2
+OPT = -g
 CCflags = -std=c++17 $(OPT)
 STATLibs = -static-libstdc++ -static-libgcc -static
 BOOSTLIB = -L../../boost/boost1_72/lib -lboost_program_options-mgw82-mt-x64-1_72
@@ -20,7 +20,7 @@ WEXLIBS = -lstdc++fs -lgdiplus -lgdi32 -lcomdlg32
 
 ### OBJECT FILES
 
-OBJ = $(ODIR)/pack.o 
+OBJ = $(ODIR)/pack.o $(ODIR)/cPackage.o
 
 ### COMPILE
 
@@ -30,7 +30,7 @@ $(ODIR)/%.o : $(SDIR)/%.cpp
 #### LINK
 
 pack : $(OBJ)
-	g++ -o ./bin/pack.exe -s \
+	g++ -o ./bin/pack.exe \
 		$(OBJ) $(WEXLIBS) $(STATLibs) $(OPT)
 
 ### CLEAN

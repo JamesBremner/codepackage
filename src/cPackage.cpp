@@ -16,7 +16,8 @@ std::string exec(const std::string &cmd)
 {
     std::array<char, 128> buffer;
     std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
+    std::string cmd2 = cmd + " 2>&1";
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd2.c_str(), "r"), pclose);
     if (!pipe)
     {
         throw std::runtime_error("popen() failed!");

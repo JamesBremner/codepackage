@@ -17,12 +17,6 @@ public:
     /// set files to be published
     void files( const std::vector<std::string>& files);
 
-    /// ID of last cloned commit
-    std::string commit();
-
-    /// ID of last commit in repo
-    std::string commitRemote();
-
     /// true if clone is up to data
     bool isUpToDate();
 
@@ -30,7 +24,7 @@ public:
     void clone();
 
     /// change working directory to cloned repo
-    void cd();
+    bool cd();
 
     /// publish files from clone
     void publish(const std::string& dst);
@@ -43,7 +37,7 @@ private:
     std::vector<std::string> myFiles;
 };
 
-/// Manage all apckages
+/// Manage all packages
 class cAllPackages
 {
 public:

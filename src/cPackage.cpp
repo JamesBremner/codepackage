@@ -56,22 +56,19 @@ void cPackage::files(const std::vector<std::string> &files)
 {
     myFiles = files;
 }
-std::string cPackage::commit()
-{
-    cd();
-    auto s = exec("git rev-parse HEAD");
-    std::cout << "commit local " << s << "\n";
-    return s;
-}
-std::string cPackage::commitRemote()
-{
-    auto s = exec("git ls-remote " + github + "/" + myRepoName + " HEAD");
-    std::cout << "commit remote " << s << "\n";
-    return s.substr(0, s.length() - 6) + "\n";
-}
+
 bool cPackage::isUpToDate()
 {
-    return (commit() == commitRemote());
+    auto wpath = std::filesystem::current_path().string();
+    if( ! std::filesystem::exists( myRepoName))
+        return false;
+    if( ! cd() )
+        return false;
+    auto s = exec("git status " + myRepoName);
+    _chdir(wpath.c_str());
+
+    //std::cout << "\n" + myRepoName + "\n" + s + "\n";
+    return ( s.find("is up to date") != -1 );
 }
 void cPackage::clone()
 {
@@ -114,16 +111,17 @@ void cPackage::clone()
     exec("git clone " + github + "/" + myRepoName);
 
 }
-void cPackage::cd()
+bool cPackage::cd()
 {
     auto sdir = myRepoName;
     if (!myRepoSrc.empty())
         sdir += "/" + myRepoSrc;
-    _chdir(sdir.c_str());
+    return ( _chdir(sdir.c_str()) == 0 );
 }
 void cPackage::publish(const std::string &dst)
 {
-    cd();
+    if( ! cd() )
+        return;
     for (auto &fn : myFiles)
     {
         std::filesystem::remove(dst + "/" + fn);

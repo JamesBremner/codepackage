@@ -29,7 +29,7 @@ public:
     /// clone repository
     void clone();
 
-    /// change working directory to clobed repo
+    /// change working directory to cloned repo
     void cd();
 
     /// publish files from clone

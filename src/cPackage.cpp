@@ -8,6 +8,8 @@
 #include <functional>
 #include <filesystem>
 #include <iomanip>
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>  
 #include "direct.h"
 
 #include "cPackage.h"
@@ -16,7 +18,8 @@ std::string exec(const std::string &cmd)
 {
     std::array<char, 128> buffer;
     std::string result;
-    std::string cmd2 = cmd + " 2>&1";
+    //std::string cmd2 = cmd + " 2>&1";
+    std::string cmd2 = cmd;
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd2.c_str(), "r"), pclose);
     if (!pipe)
     {
@@ -56,11 +59,14 @@ void cPackage::files(const std::vector<std::string> &files)
 std::string cPackage::commit()
 {
     cd();
-    return exec("git rev-parse HEAD");
+    auto s = exec("git rev-parse HEAD");
+    std::cout << "commit local " << s << "\n";
+    return s;
 }
 std::string cPackage::commitRemote()
 {
     auto s = exec("git ls-remote " + github + "/" + myRepoName + " HEAD");
+    std::cout << "commit remote " << s << "\n";
     return s.substr(0, s.length() - 6) + "\n";
 }
 bool cPackage::isUpToDate()
@@ -69,7 +75,44 @@ bool cPackage::isUpToDate()
 }
 void cPackage::clone()
 {
+    // delete the old repo
+
+    int count = 0;
+    while (count < 5)
+    {
+        try
+        {
+            std::filesystem::remove_all(myRepoName);
+            break;  // success
+        }
+        catch (std::filesystem::filesystem_error &e)
+        {
+            // failure, probably becuase of a readonly file
+            // extrace filename from exception
+            //std::cout << e.what() << "\n";
+
+            std::this_thread::sleep_for (std::chrono::milliseconds(250));
+            std::string f ( e.what() );
+            int p = f.find("[");
+            p = f.find("[",p+1);
+            f = f.substr(p+1);
+            f = f.substr(0,f.length()-1);
+
+            // make the file writeable
+            std::filesystem::permissions(
+                f, std::filesystem::perms::owner_write );
+
+            // only two readonly files have been seen
+            // so, in case there is some other problem
+            // do not keep looping for ever
+            count++;
+        }
+    }
+
+    // get a new clone of the repo
+    
     exec("git clone " + github + "/" + myRepoName);
+
 }
 void cPackage::cd()
 {
@@ -125,7 +168,26 @@ cAllPackages::cAllPackages()
                  "slider.h",
                  "tcp.h",
                  "wex.h",
-                 "window2file.h"});
+                 "window2file.h",
+                 "widgets.h"});
+        myPacks.push_back(P);
+    }
+    {
+        cPackage P;
+        P.userName("entityDB");
+        P.repoSrc("src");
+        P.files({"entitydb.h",
+                 "entitydb.cpp"});
+        myPacks.push_back(P);
+    }
+    {
+        cPackage P;
+        P.userName("sqlite");
+        P.repoName("raven-set");
+        P.files({"raven_sqlite.h",
+                 "raven_sqlite.cpp",
+                 "cTCP.cpp",
+                 "cTCP.h"});
         myPacks.push_back(P);
     }
 }

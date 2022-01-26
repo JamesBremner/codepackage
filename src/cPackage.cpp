@@ -188,6 +188,13 @@ cAllPackages::cAllPackages()
                  "cTCP.h"});
         myPacks.push_back(P);
     }
+    {
+        cPackage P;
+        P.userName("await");
+        P.repoSrc("include");
+        P.files({"await.h"});
+        myPacks.push_back(P);
+    }
 }
 
 std::string cAllPackages::workfolder()

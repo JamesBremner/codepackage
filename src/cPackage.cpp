@@ -64,7 +64,8 @@ bool cPackage::isUpToDate()
         return false;
     if( ! cd() )
         return false;
-    auto s = exec("git status " + myRepoName);
+    exec("git fetch ");
+    auto s = exec("git status ");
     _chdir(wpath.c_str());
 
     //std::cout << "\n" + myRepoName + "\n" + s + "\n";
@@ -75,7 +76,7 @@ void cPackage::clone()
     // delete the old repo
 
     int count = 0;
-    while (count < 5)
+    while (count < 10)
     {
         try
         {
@@ -105,6 +106,9 @@ void cPackage::clone()
             count++;
         }
     }
+    if( count == 10 )
+        throw std::runtime_error(
+            "Failed to remove old repo");
 
     // get a new clone of the repo
     

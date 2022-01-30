@@ -14,7 +14,7 @@ ODIR = ./.vscode/obj
 
 OPT = -O2
 CCflags = -std=c++17 $(OPT)
-STATLibs = -static-libstdc++ -static-libgcc -static
+STATLibs = -static-libstdc++ -static-libgcc -lUrlmon -static
 BOOSTLIB = -L../../boost/boost1_72/lib -lboost_program_options-mgw82-mt-x64-1_72
 WEXLIBS = -lstdc++fs -lgdiplus -lgdi32 -lcomdlg32
 

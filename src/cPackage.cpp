@@ -19,7 +19,7 @@ std::string exec(const std::string &cmd)
 {
     std::array<char, 128> buffer;
     std::string result;
-    //std::string cmd2 = cmd + " 2>&1";
+    // std::string cmd2 = cmd + " 2>&1";
     std::string cmd2 = cmd;
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd2.c_str(), "r"), pclose);
     if (!pipe)
@@ -72,7 +72,7 @@ bool cPackage::isUpToDate()
     auto s = exec("git status ");
     _chdir(wpath.c_str());
 
-    //std::cout << "\n" + myRepoName + "\n" + s + "\n";
+    // std::cout << "\n" + myRepoName + "\n" + s + "\n";
     return (s.find("is up to date") != -1);
 }
 void cPackage::clone()
@@ -80,7 +80,7 @@ void cPackage::clone()
     // delete the old repo
 
     int count = 0;
-    while (count < 10)
+    while (count < 20)
     {
         try
         {
@@ -90,8 +90,8 @@ void cPackage::clone()
         catch (std::filesystem::filesystem_error &e)
         {
             // failure, probably becuase of a readonly file
-            // extrace filename from exception
-            //std::cout << e.what() << "\n";
+            // extract filename from exception
+            // std::cout << e.what() << "\n";
 
             std::this_thread::sleep_for(std::chrono::milliseconds(250));
             std::string f(e.what());
@@ -110,9 +110,10 @@ void cPackage::clone()
             count++;
         }
     }
-    if (count == 10)
+    if (count == 20)
         throw std::runtime_error(
-            "Failed to remove old repo");
+            "Failed to remove old repo"
+            " please try again");
 
     // get a new clone of the repo
     if (myRemote.find("github") != -1)
@@ -128,7 +129,7 @@ void cPackage::downloadZip()
 {
     std::filesystem::create_directory(myRepoName);
     std::string downfname = myRepoName + "/" + myRepoName + ".zip";
-    URLDownloadToFile(
+    URLDownloadToFileA(
         NULL,
         myRemote.c_str(),
         downfname.c_str(),
@@ -165,16 +166,13 @@ cAllPackages::cAllPackages()
 
     {
         cPackage P;
-        P.userName("cutest");
+        P.userName("raven-set");
         P.repoName("raven-set");
         P.files({"cutest.h",
-                 "cutest.cpp"});
-        myPacks.push_back(P);
-    }
-    {
-        cPackage P;
-        P.userName("runwatch");
-        P.repoName("raven-set");
+                 "cutest.cpp",
+                 "cTCP.cpp",
+                 "cTCP.h",
+                 "cCommandParser.h"});
         myPacks.push_back(P);
     }
     {
@@ -207,9 +205,7 @@ cAllPackages::cAllPackages()
         P.userName("sqlite");
         P.repoName("raven-set");
         P.files({"raven_sqlite.h",
-                 "raven_sqlite.cpp",
-                 "cTCP.cpp",
-                 "cTCP.h"});
+                 "raven_sqlite.cpp"});
         myPacks.push_back(P);
     }
     {

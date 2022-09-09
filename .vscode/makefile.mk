@@ -1,9 +1,7 @@
 
 # compiler include search paths
 INCS = -I./ \
-	-I../../boost/boost1_72 \
-	-I../../raven-set \
-	-I../../windex/include
+	-I./src/ravencode 
 
 # folders
 
@@ -12,7 +10,7 @@ ODIR = ./.vscode/obj
 
 # symbols
 
-OPT = -O2
+OPT = -g
 CCflags = -std=c++17 $(OPT)
 STATLibs = -static-libstdc++ -static-libgcc -lUrlmon -static
 BOOSTLIB = -L../../boost/boost1_72/lib -lboost_program_options-mgw82-mt-x64-1_72

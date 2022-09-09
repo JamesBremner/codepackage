@@ -64,8 +64,23 @@ public:
     /// the folder where the manager is running form
     const std::string& packFolder() const;
 
+    void targetFolder( const std::string& folder)
+    {
+        myTarget = folder;
+    }
+
+    void clone()
+    {
+        myPackageToPublish->clone();
+    }
+
+    void publish();
+
 private:
     std::vector<cPackage> myPacks;
     std::string myPackFolder;
+    std::string myTarget;
+    cPackage* myPackageToPublish;
+
     std::string workfolder();
 };

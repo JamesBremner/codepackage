@@ -10,25 +10,37 @@
 #include <iomanip>
 #include "direct.h"
 
+#include "cCommandParser.h"
 #include "cPackage.h"
+
+cAllPackages thePacks;
+
+void commandParse(int ac, char **av)
+{
+    if (ac == 1)
+    {
+        std::cout << thePacks.list();
+        exit(0);
+    }
+
+    raven::set::cCommandParser P;
+
+    P.add("pack", "name of package to load");
+    P.add("target", "absolute path to folder containing repo to update");
+
+    P.parse(ac, av);
+
+    thePacks.find(
+        P.value("pack"));
+    thePacks.targetFolder(
+        P.value("target"));
+}
 
 int main(int argc, char *argv[])
 {
-    cAllPackages thePacks;
-    
 
-    if (argc == 1)
-    {
-        std::cout << thePacks.list();
-        return 0;
-    }
+    commandParse(argc, argv);
 
-    auto P = thePacks.find(argv[1]);
-    if (P.userName().empty())
-        throw std::runtime_error(
-            std::string("Cannot find ") + argv[1]);
-    P.clone();
-    P.publish(thePacks.packFolder() + "/pub/src");
-    std::cout << P.userName() << " published to "
-              << thePacks.packFolder() << "/pub/src";
+    thePacks.clone();
+    thePacks.publish();
 }

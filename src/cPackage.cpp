@@ -89,7 +89,7 @@ void cPackage::clone()
         }
         catch (std::filesystem::filesystem_error &e)
         {
-            // failure, probably becuase of a readonly file
+            // failure, probably because of a readonly file
             // extract filename from exception
             // std::cout << e.what() << "\n";
 
@@ -141,7 +141,19 @@ bool cPackage::cd()
     auto sdir = myRepoName;
     if (!myRepoSrc.empty())
         sdir += "/" + myRepoSrc;
-    return (_chdir(sdir.c_str()) == 0);
+    std::cout << "cd " << sdir << "\n";
+
+    int ret = _chdir(sdir.c_str());
+    if( ret != 0 )
+        return false;
+
+    // const int BUFSIZE = 4096;
+    // char buf[BUFSIZE];
+    // memset(buf, 0, BUFSIZE);
+    // _getcwd(buf, BUFSIZE - 1);
+    // std::cout << buf << "\n";
+
+    return true;
 }
 void cPackage::publish(const std::string &dst)
 {
@@ -246,11 +258,12 @@ cPackage &cAllPackages::find(const std::string &name)
     {
         if (p.userName() == name)
         {
+            myPackageToPublish = &p;
             return p;
         }
     }
-    static cPackage none;
-    return none;
+    throw std::runtime_error(
+        std::string("Cannot find ") + name);
 }
 std::string cAllPackages::list()
 {
@@ -266,4 +279,12 @@ std::string cAllPackages::list()
         ss << "\n";
     }
     return ss.str();
+}
+
+void cAllPackages::publish()
+{
+    myPackageToPublish->publish(
+        myTarget + "/src/ravencode" );
+    std::cout << myPackageToPublish->userName() << " published to "
+              << myTarget << "/src/ravencode";
 }

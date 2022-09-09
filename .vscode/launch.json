@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/pack.exe",
-            //"args": ["windex"],
+            "args": ["--pack", "raven-set", "--target", "C:/Users/James/code/codepackage"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
             "environment": [],
